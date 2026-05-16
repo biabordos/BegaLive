@@ -221,10 +221,8 @@
         <div class="viewer-header">
             <div class="viewer-title">▸ Vizualizare Spațială</div>
             <div class="viewer-controls">
-    <!-- Noul buton adăugat în stânga -->
     <button class="btn-secondary" onclick="window.open('specii.html', '_blank')">🌿 Detalii specii</button>
     
-    <!-- Butoanele tale existente -->
     <button id="toggleMapBtn" class="btn-secondary" style="font-weight: bold;" onclick="toggleMapMode()">MAPA 2D</button>
     <button id="resetCamera" class="btn-secondary" onclick="resetCam()">Reset cameră</button>
     <button class="btn-secondary" onclick="window.open('senzor.html', '_blank')">🧪 Vizualizează senzor</button>
@@ -530,8 +528,13 @@ map3dDiv.addEventListener('mousemove', (event) => {
                     ${object.userData.date.nume} <br>
                     <span style="font-size: 32px; display:block; margin: 10px 0;">${object.userData.date.icon}</span>
                 </div>
-                <div style="color: var(--text-secondary); font-family: var(--font-body); font-size: 12px; line-height: 1.5; text-align: center;">
+                <div style="color: var(--text-secondary); font-family: var(--font-body); font-size: 12px; line-height: 1.5; text-align: center; margin-bottom: 12px;">
                     ${object.userData.date.descriere}
+                </div>
+                <div style="text-align: center;">
+                    <span style="display:inline-block; padding:6px 12px; background:rgba(20,184,166,0.15); border:1px solid var(--teal-bright); color:var(--text-primary); border-radius:6px; font-size:10px; font-family:var(--font-mono); letter-spacing: 0.5px;">
+                        🖱️ CLICK PE ICONIȚĂ PENTRU DETALII
+                    </span>
                 </div>`;
             object.scale.set(8.5, 8.5, 1);
         }
@@ -545,6 +548,31 @@ map3dDiv.addEventListener('mousemove', (event) => {
         
         Object.values(markere3D).forEach(s => s.scale.set(1, 1, 1)); 
         spritesAnimale.forEach(s => s.scale.set(7, 7, 1)); 
+    }
+});
+
+// --- LOGICĂ CLICK PENTRU A DESCHIDE PAGINA DE SPECII ---
+map3dDiv.addEventListener('click', (event) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    
+    const toateObiectele = [...Object.values(markere3D), ...spritesAnimale];
+    const intersects = raycaster.intersectObjects(toateObiectele);
+    
+    if (intersects.length > 0) {
+        const object = intersects[0].object; 
+        
+        if (object.userData.tip === 'animal') {
+            let ancora = "";
+            const nume = object.userData.date.nume.toLowerCase();
+            if (nume.includes('pești') || nume.includes('pesti')) ancora = "#pesti";
+            else if (nume.includes('amfibieni')) ancora = "#amfibieni";
+            else if (nume.includes('nutrii')) ancora = "#nutrii";
+            
+            window.open('specii.html' + ancora, '_blank');
+        }
     }
 });
 
