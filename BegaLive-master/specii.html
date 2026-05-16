@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BegaLive – Detalii Specii</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --teal-deep:    #042f2e;
+            --teal-bright:  #14b8a6;
+            --text-primary: #f0fdfa;
+            --text-muted:   #5eead4;
+            --font-display: 'DM Serif Display', serif;
+            --font-body:    'Outfit', sans-serif;
+        }
+        body { 
+            background: var(--teal-deep); 
+            color: var(--text-primary); 
+            font-family: var(--font-body); 
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        h1 { font-family: var(--font-display); color: var(--teal-bright); font-size: 2.5rem; margin-bottom: 10px; }
+        
+        /* Stiluri pentru categorii principale */
+        h2 { 
+            font-family: var(--font-display); 
+            color: var(--text-primary); 
+            margin-top: 50px; 
+            border-bottom: 1px solid rgba(20,184,166,0.3); 
+            padding-bottom: 10px;
+            font-size: 2rem;
+            font-weight: 400;
+        }
+        
+        /* Stiluri pentru subcategorii */
+        h3 { 
+            font-family: var(--font-body); 
+            color: var(--teal-bright); 
+            margin-top: 30px; 
+            font-size: 1.3rem; 
+            font-weight: 500; 
+            letter-spacing: 0.5px;
+        }
+        
+        p { color: var(--text-muted); font-weight: 300; margin-bottom: 15px; }
+        
+        /* Container pentru a indenta frumos subcategoriile */
+        .sub-category {
+            margin-left: 20px;
+            border-left: 2px solid rgba(94, 234, 212, 0.15);
+            padding-left: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-btn { 
+            display: inline-block; 
+            padding: 8px 16px; 
+            background: rgba(20,184,166,0.1); 
+            border: 1px solid var(--teal-bright); 
+            color: var(--teal-bright); 
+            text-decoration: none; 
+            border-radius: 6px; 
+            margin-bottom: 30px; 
+            font-family: 'DM Mono', monospace; 
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background: rgba(20,184,166,0.3); }
+        .intro-text { font-size: 1.1rem; opacity: 0.9; margin-bottom: 40px; }
+    </style>
+</head>
+<body>
+
+    <a href="#" onclick="window.close(); return false;" class="back-btn">← Închide pagina</a>
+
+    <h1>🌿 Catalogul Speciilor</h1>
+    <p class="intro-text">Documentație detaliată a faunei monitorizate în ecosistemul râului Bega.</p>
+
+    <!-- 1. NUTRII -->
+    <h2>🦦 Nutrii</h2>
+    <p>[Aici introduci descrierea generală pentru nutrii...]</p>
+
+    <!-- 2. PEȘTI -->
+    <h2>🐟 Pești</h2>
+    <p>[Aici introduci o scurtă introducere despre peștii din Bega, dacă dorești...]</p>
+    
+    <div class="sub-category">
+        <h3>Crap</h3>
+        <p>[Descriere crap...]</p>
+
+        <h3>Caras</h3>
+        <p>[Descriere caras...]</p>
+
+        <h3>Avat</h3>
+        <p>[Descriere avat...]</p>
+
+        <h3>Biban</h3>
+        <p>[Descriere biban...]</p>
+
+        <h3>Șalău</h3>
+        <p>[Descriere șalău...]</p>
+
+        <h3>Somn</h3>
+        <p>[Descriere somn...]</p>
+
+        <h3>Plătică</h3>
+        <p>[Descriere plătică...]</p>
+
+        <h3>Roșioară</h3>
+        <p>[Descriere roșioară...]</p>
+
+        <h3>Oblete</h3>
+        <p>[Descriere oblete...]</p>
+
+        <h3>Mreană</h3>
+        <p>[Descriere mreană...]</p>
+
+        <h3>Lin</h3>
+        <p>[Descriere lin...]</p>
+    </div>
+
+    <!-- 3. AMFIBIENI -->
+    <h2>🐸 Amfibieni</h2>
+    <p>[Aici introduci o scurtă introducere despre amfibienii din zona Begăi...]</p>
+
+    <div class="sub-category">
+        <h3>Broasca râioasă brună</h3>
+        <p>[Descriere broasca râioasă brună...]</p>
+
+        <h3>Broasca râioasă verde</h3>
+        <p>[Descriere broasca râioasă verde...]</p>
+
+        <h3>Broasca roșie de pădure</h3>
+        <p>[Descriere broasca roșie de pădure...]</p>
+
+        <h3>Brotăcel</h3>
+        <p>[Descriere brotăcel...]</p>
+    </div>
+
+    <!-- 4. EGRETE -->
+    <h2>🦢 Egrete</h2>
+    <p>[Aici introduci descrierea generală pentru egrete...]</p>
+
+    <!-- 5. STÂRCII CENUȘII -->
+    <h2>🦤 Stârcii cenușii</h2>
+    <p>[Aici introduci descrierea generală pentru stârcii cenușii...]</p>
+
+</body>
+</html>
