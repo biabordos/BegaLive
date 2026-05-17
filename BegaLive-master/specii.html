@@ -3,146 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BegaLive – Detalii Specii</title>
+    <title>BegaLive – Catalog Specii</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --teal-deep:    #042f2e;
+            --teal-dark:    #0d4f4c;
+            --teal-mid:     #0f766e;
             --teal-bright:  #14b8a6;
+            --teal-light:   #5eead4;
+            --teal-pale:    #ccfbf1;
+            --green-dark:   #14532d;
+            --green-mid:    #16a34a;
+            --green-bright: #4ade80;
+            --blue-deep:    #0c2340;
+            --blue-mid:     #0369a1;
+            --blue-bright:  #38bdf8;
             --text-primary: #f0fdfa;
+            --text-secondary: #99f6e4;
             --text-muted:   #5eead4;
+            --glass:        rgba(13, 79, 76, 0.45);
+            --glass-border: rgba(94, 234, 212, 0.2);
             --font-display: 'DM Serif Display', serif;
             --font-body:    'Outfit', sans-serif;
-        }
-        body { 
-            background: var(--teal-deep); 
-            color: var(--text-primary); 
-            font-family: var(--font-body); 
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-        h1 { font-family: var(--font-display); color: var(--teal-bright); font-size: 2.5rem; margin-bottom: 10px; }
-        
-        /* Stiluri pentru categorii principale */
-        h2 { 
-            font-family: var(--font-display); 
-            color: var(--text-primary); 
-            margin-top: 50px; 
-            border-bottom: 1px solid rgba(20,184,166,0.3); 
-            padding-bottom: 10px;
-            font-size: 2rem;
-            font-weight: 400;
-        }
-        
-        /* Stiluri pentru subcategorii */
-        h3 { 
-            font-family: var(--font-body); 
-            color: var(--teal-bright); 
-            margin-top: 30px; 
-            font-size: 1.3rem; 
-            font-weight: 500; 
-            letter-spacing: 0.5px;
-        }
-        
-        p { color: var(--text-muted); font-weight: 300; margin-bottom: 15px; }
-        
-        /* Container pentru a indenta frumos subcategoriile */
-        .sub-category {
-            margin-left: 20px;
-            border-left: 2px solid rgba(94, 234, 212, 0.15);
-            padding-left: 20px;
-            margin-bottom: 30px;
+            --font-mono:    'DM Mono', monospace;
         }
 
-        .back-btn { 
-            display: inline-block; 
-            padding: 8px 16px; 
-            background: rgba(20,184,166,0.1); 
-            border: 1px solid var(--teal-bright); 
-            color: var(--teal-bright); 
-            text-decoration: none; 
-            border-radius: 6px; 
-            margin-bottom: 30px; 
-            font-family: 'DM Mono', monospace; 
-            font-size: 0.8rem;
-            transition: all 0.2s;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--teal-deep); color: var(--text-primary); font-family: var(--font-body); overflow-x: hidden; padding: 40px; }
+
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2314b8a6' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none; z-index: 9999; opacity: 0.4;
         }
+
+        header { padding-bottom: 2rem; border-bottom: 1px solid var(--glass-border); margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { display: inline-block; padding: 8px 16px; background: rgba(20,184,166,0.1); border: 1px solid var(--teal-bright); color: var(--teal-bright); text-decoration: none; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; transition: all 0.2s; }
         .back-btn:hover { background: rgba(20,184,166,0.3); }
-        .intro-text { font-size: 1.1rem; opacity: 0.9; margin-bottom: 40px; }
+        h1 { font-family: var(--font-display); color: var(--teal-bright); font-size: 2.5rem; }
+        .intro-text { color: var(--text-muted); font-weight: 300; margin-top: 10px; max-width: 700px; }
+
+        /* --- ANIMAȚII ORGANICE --- */
+        @keyframes grassWind {
+            0%   { background-position: 0 1px; }
+            50%  { background-position: 15px 1px; }
+            100% { background-position: 0 1px; }
+        }
+        @keyframes organicPulse {
+            0%, 100% { box-shadow: 0 12px 36px rgba(0,0,0,0.5), 0 0 20px rgba(20,184,166,0.15); border-color: var(--teal-bright); }
+            50%      { box-shadow: 0 12px 36px rgba(0,0,0,0.5), 0 0 30px rgba(74,222,128,0.35); border-color: rgba(74,222,128,0.6); }
+        }
+
+        /* ── LOGICĂ ȘI STILIZARE TOOLTIP CU VEGETAȚIE MINIMALISTĂ ── */
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+            display: inline-block;
+            transition: color 0.2s ease;
+        }
+        
+        [data-tooltip]:hover {
+            color: var(--text-muted);
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 0;
+            transform: scale(0.9);
+            transform-origin: bottom left;
+            
+            background-color: rgba(4, 47, 46, 0.98);
+            
+            /* SVG Iarbă */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='10' viewBox='0 0 30 10'%3E%3Cpath d='M4 10C5 6 7 3 9 1M9 1C8 4 7 7 7 10M22 10C21 7 19 4 17 2M17 2C18 5 19 8 19 10M12 10Q13 6 15 5' fill='none' stroke='%2314b8a6' stroke-width='0.8' stroke-linecap='round' opacity='0.75'/%3E%3C/svg%3E");
+            background-repeat: repeat-x;
+            
+            /* Animații adăugate */
+            animation: grassWind 4s ease-in-out infinite, organicPulse 3s ease-in-out infinite;
+            
+            border: 1px solid var(--teal-bright);
+            color: var(--text-primary);
+            padding: 24px 18px 14px 18px;
+            border-radius: 12px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            white-space: pre;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-tooltip]::before {
+            content: '';
+            position: absolute;
+            bottom: 115%;
+            left: 20px;
+            width: 0; height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--teal-bright);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+            transition: opacity 0.2s ease;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+        [data-tooltip]:hover::before {
+            opacity: 1;
+        }
+
+        /* Stiluri pentru tabela de specii */
+        .wrap{padding:1rem 0}
+        .controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem;align-items:center}
+        .controls label{font-size:13px;color:var(--text-secondary);margin-right:4px}
+        .group-btn{font-size:12px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--glass-border);background:rgba(20,184,166,0.1);color:var(--teal-light);cursor:pointer;transition:all .15s;font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase}
+        .group-btn.active{background:var(--teal-bright);color:var(--teal-deep);border-color:var(--teal-bright)}
+        .search-box{padding:6px 12px;border-radius:6px;border:0.5px solid var(--glass-border);background:var(--glass);color:var(--text-primary);font-size:13px;width:180px;backdrop-filter:blur(12px)}
+        .tbl-wrap{overflow-x:auto;border:0.5px solid var(--glass-border);border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,0.3);margin-top:20px}
+        table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px;font-family:var(--font-mono)}
+        thead tr{background:linear-gradient(135deg, rgba(12,35,64,0.7), rgba(4,47,46,0.7));backdrop-filter:blur(12px)}
+        th{padding:8px 10px;text-align:left;font-weight:500;font-size:11px;color:var(--teal-bright);border-bottom:0.5px solid var(--glass-border);white-space:nowrap;position:sticky;top:0;z-index:5}
+        td{padding:12px 10px;border-bottom:0.5px solid rgba(94,234,212,0.08);color:var(--text-secondary);vertical-align:top;line-height:1.4}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:rgba(20,184,166,0.08)}
+        .species-name{font-weight:500;font-size:13px;white-space:nowrap;color:var(--teal-light)}
+        .badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;margin-bottom:4px;font-weight:500;font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase}
+        .b-fish{background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);color:var(--blue-bright)}
+        .b-amphi{background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:var(--green-bright)}
+        .b-mammal{background:rgba(250,238,218,0.05);border:1px solid rgba(250,238,218,0.2);color:var(--text-pale)}
+        .b-bird{background:rgba(127,119,221,0.1);border:1px solid rgba(127,119,221,0.3);color:var(--text-primary)}
+        .val{font-size:12px;color:var(--teal-light)}
+        .note{font-size:10px;color:var(--text-muted);margin-top:2px}
+        .hidden{display:none}
+        .legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:1rem}
+        .leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-secondary);font-family:var(--font-mono)}
+        .leg-dot{width:10px;height:10px;border-radius:50%}
     </style>
 </head>
 <body>
 
-    <a href="#" onclick="window.close(); return false;" class="back-btn">← Închide pagina</a>
+    <header>
+        <a href="dashboard.html" class="back-btn">← Harta Principală</a>
+        <h1>🌿 Catalogul Speciilor</h1>
+    </header>
+    <p class="intro-text">Documentație detaliată a faunei monitorizate în ecosistemul râului Bega. Tabela afișează condițiile optime de viață pentru 18 specii identificate în Timișoara.</p>
 
-    <h1>🌿 Catalogul Speciilor</h1>
-    <p class="intro-text">Documentație detaliată a faunei monitorizate în ecosistemul râului Bega.</p>
-
-    <h2 id="nutrii">🦦 Nutrii</h2>
-    <p>[Aici introduci descrierea generală pentru nutrii...]</p>
-
-    <h2 id="pesti">🐟 Pești</h2>
-    <p>[Aici introduci o scurtă introducere despre peștii din Bega, dacă dorești...]</p>
-    
-    <div class="sub-category">
-        <h3>Crap</h3>
-        <p>[Descriere crap...]</p>
-
-        <h3>Caras</h3>
-        <p>[Descriere caras...]</p>
-
-        <h3>Avat</h3>
-        <p>[Descriere avat...]</p>
-
-        <h3>Biban</h3>
-        <p>[Descriere biban...]</p>
-
-        <h3>Șalău</h3>
-        <p>[Descriere șalău...]</p>
-
-        <h3>Somn</h3>
-        <p>[Descriere somn...]</p>
-
-        <h3>Plătică</h3>
-        <p>[Descriere plătică...]</p>
-
-        <h3>Roșioară</h3>
-        <p>[Descriere roșioară...]</p>
-
-        <h3>Oblete</h3>
-        <p>[Descriere oblete...]</p>
-
-        <h3>Mreană</h3>
-        <p>[Descriere mreană...]</p>
-
-        <h3>Lin</h3>
-        <p>[Descriere lin...]</p>
+    <div class="wrap">
+        <div class="controls">
+            <label>Grup:</label>
+            <button class="group-btn active" data-group="all">Toate</button>
+            <button class="group-btn" data-group="pesti">Pești</button>
+            <button class="group-btn" data-group="amfibieni">Amfibieni</button>
+            <button class="group-btn" data-group="mamifere">Nutrie</button>
+            <button class="group-btn" data-group="pasari">Păsări</button>
+            <input class="search-box" type="text" id="search" placeholder="Caută specie...">
+        </div>
+        <div class="legend">
+            <span class="leg-item"><span class="leg-dot" style="background:var(--blue-bright)"></span>Pești</span>
+            <span class="leg-item"><span class="leg-dot" style="background:var(--green-bright)"></span>Amfibieni</span>
+            <span class="leg-item"><span class="leg-dot" style="background:var(--text-pale)"></span>Mamifere</span>
+            <span class="leg-item"><span class="leg-dot" style="background:var(--text-primary)"></span>Păsări</span>
+        </div>
+        <div class="tbl-wrap">
+            <table id="main-table">
+                <thead>
+                    <tr>
+                        <th style="min-width:130px">Specie</th>
+                        <th>Turbiditate<br><span style="font-weight:400;font-size:10px">(NTU)</span></th>
+                        <th>Temp. apă<br><span style="font-weight:400;font-size:10px">(°C)</span></th>
+                        <th>pH</th>
+                        <th>O₂ dizolvat<br><span style="font-weight:400;font-size:10px">(mg/L)</span></th>
+                        <th>Debit<br><span style="font-weight:400;font-size:10px">(m/s)</span></th>
+                        <th>Zgomot<br><span style="font-weight:400;font-size:10px">(dB)</span></th>
+                        <th>Temp. aer<br><span style="font-weight:400;font-size:10px">(°C)</span></th>
+                        <th>Umiditate<br><span style="font-weight:400;font-size:10px">(%)</span></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
     </div>
+    <script>
+        const data = [
+            {group:'mamifere',badge:'b-mammal',label:'Mamifere',name:'Nutrie',latin:'Myocastor coypus',
+             turb:'10 – 150',tempW:'5 – 25',ph:'6.5 – 8.5',o2:'> 4',debit:'0 – 0.5',zgomot:'< 50',tempA:'-5 – 30',umid:'60 – 90',
+             notes:{turb:'tolerează ape tulburi',debit:'preferă curent lent',zgomot:'sensibilă la perturbări'}},
 
-    <h2 id="amfibieni">🐸 Amfibieni</h2>
-    <p>[Aici introduci o scurtă introducere despre amfibienii din zona Begăi...]</p>
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Crab de râu',latin:'Potamon fluviatile',
+             turb:'10 – 100',tempW:'10 – 24',ph:'7.0 – 8.5',o2:'> 6',debit:'0.2 – 1.0',zgomot:'< 55',tempA:'10 – 28',umid:'60 – 85',
+             notes:{o2:'sensibil la deficit de O₂',debit:'preferă substrat pietros'}},
 
-    <div class="sub-category">
-        <h3>Broasca râioasă brună</h3>
-        <p>[Descriere broasca râioasă brună...]</p>
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Caras',latin:'Carassius gibelio',
+             turb:'10 – 200',tempW:'5 – 30',ph:'6.5 – 8.5',o2:'> 3',debit:'0 – 0.3',zgomot:'< 60',tempA:'10 – 30',umid:'50 – 80',
+             notes:{o2:'extrem de tolerant',turb:'rezistent la turbiditate ridicată'}},
 
-        <h3>Broasca râioasă verde</h3>
-        <p>[Descriere broasca râioasă verde...]</p>
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Avat',latin:'Aspius aspius',
+             turb:'5 – 50',tempW:'10 – 25',ph:'7.0 – 8.5',o2:'> 6',debit:'0.3 – 1.5',zgomot:'< 50',tempA:'15 – 28',umid:'50 – 80',
+             notes:{turb:'preferă ape clare',debit:'specie reofila, curent moderat-rapid'}},
 
-        <h3>Broasca roșie de pădure</h3>
-        <p>[Descriere broasca roșie de pădure...]</p>
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Biban',latin:'Perca fluviatilis',
+             turb:'5 – 80',tempW:'10 – 24',ph:'7.0 – 8.5',o2:'> 6',debit:'0 – 0.5',zgomot:'< 55',tempA:'10 – 28',umid:'50 – 80',
+             notes:{tempW:'optim 18 – 22 °C'}},
 
-        <h3>Brotăcel</h3>
-        <p>[Descriere brotăcel...]</p>
-    </div>
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Șalău',latin:'Sander lucioperca',
+             turb:'10 – 100',tempW:'12 – 25',ph:'7.0 – 8.5',o2:'> 6',debit:'0 – 0.5',zgomot:'< 50',tempA:'15 – 28',umid:'50 – 80',
+             notes:{tempW:'optim 18 – 22 °C',turb:'tolerează turbiditate medie'}},
 
-    <h2 id="egrete">🦢 Egrete</h2>
-    <p>[Aici introduci descrierea generală pentru egrete...]</p>
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Somn',latin:'Silurus glanis',
+             turb:'10 – 300',tempW:'15 – 30',ph:'6.5 – 8.5',o2:'> 3',debit:'0 – 0.3',zgomot:'< 60',tempA:'15 – 35',umid:'50 – 80',
+             notes:{tempW:'optim 22 – 28 °C',zgomot:'sensibil la vibrații',turb:'tolerant, preferă ape tulburi'}},
 
-    <h2 id="starci">🦤 Stârcii cenușii</h2>
-    <p>[Aici introduci descrierea generală pentru stârcii cenușii...]</p>
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Plătică',latin:'Abramis brama',
+             turb:'10 – 150',tempW:'8 – 28',ph:'6.5 – 8.5',o2:'> 4',debit:'0 – 0.3',zgomot:'< 60',tempA:'10 – 28',umid:'50 – 80',
+             notes:{tempW:'optim 18 – 24 °C',debit:'preferă ape lente sau stagnante'}},
 
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Roșioară',latin:'Scardinius erythrophthalmus',
+             turb:'10 – 100',tempW:'10 – 28',ph:'6.5 – 8.5',o2:'> 4',debit:'0 – 0.3',zgomot:'< 60',tempA:'10 – 28',umid:'50 – 80',
+             notes:{tempW:'optim 18 – 24 °C'}},
+
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Oblete',latin:'Alburnus alburnus',
+             turb:'5 – 80',tempW:'8 – 25',ph:'7.0 – 8.5',o2:'> 6',debit:'0.2 – 0.8',zgomot:'< 55',tempA:'10 – 28',umid:'50 – 80',
+             notes:{debit:'preferă curent moderat',turb:'preferă ape clare'}},
+
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Mreană',latin:'Barbus barbus',
+             turb:'5 – 50',tempW:'10 – 22',ph:'7.0 – 8.5',o2:'> 7',debit:'0.5 – 2.0',zgomot:'< 50',tempA:'10 – 25',umid:'50 – 80',
+             notes:{o2:'necesită ape bine oxigenate',debit:'specie reofila, curent rapid',turb:'ape clare'}},
+
+            {group:'pesti',badge:'b-fish',label:'Pești',name:'Lin',latin:'Tinca tinca',
+             turb:'10 – 200',tempW:'10 – 30',ph:'6.5 – 8.5',o2:'> 3',debit:'0 – 0.2',zgomot:'< 60',tempA:'15 – 30',umid:'60 – 85',
+             notes:{o2:'foarte tolerant la O₂ scăzut',debit:'preferă ape stagnante',tempW:'optim 20 – 26 °C'}},
+
+            {group:'amfibieni',badge:'b-amphi',label:'Amfibieni',name:'Broască râioasă brună',latin:'Bufo bufo',
+             turb:'5 – 100',tempW:'5 – 22',ph:'6.0 – 8.0',o2:'> 5',debit:'0 – 0.3',zgomot:'< 55',tempA:'5 – 25',umid:'70 – 95',
+             notes:{tempW:'preferă ape mai reci',umid:'necesită umiditate ridicată'}},
+
+            {group:'amfibieni',badge:'b-amphi',label:'Amfibieni',name:'Broască râioasă verde',latin:'Bufotes viridis',
+             turb:'5 – 150',tempW:'10 – 28',ph:'6.5 – 8.5',o2:'> 4',debit:'0 – 0.3',zgomot:'< 60',tempA:'15 – 35',umid:'60 – 90',
+             notes:{tempW:'specie mai termofilă',turb:'tolerantă la turbiditate'}},
+
+            {group:'amfibieni',badge:'b-amphi',label:'Amfibieni',name:'Broască roșie de pădure',latin:'Rana dalmatina',
+             turb:'5 – 80',tempW:'4 – 18',ph:'6.0 – 7.5',o2:'> 6',debit:'0 – 0.3',zgomot:'< 50',tempA:'5 – 20',umid:'75 – 95',
+             notes:{tempW:'preferă ape reci de pădure',ph:'pH ușor acid',zgomot:'foarte sensibilă la zgomot'}},
+
+            {group:'amfibieni',badge:'b-amphi',label:'Amfibieni',name:'Brotăcel',latin:'Hyla arborea',
+             turb:'5 – 80',tempW:'12 – 26',ph:'6.5 – 8.0',o2:'> 5',debit:'0 – 0.3',zgomot:'< 55',tempA:'15 – 30',umid:'70 – 95',
+             notes:{umid:'necesită vegetație acvatică',debit:'preferă bălți și lacuri lente'}},
+
+            {group:'pasari',badge:'b-bird',label:'Păsări',name:'Egretă mică',latin:'Egretta garzetta',
+             turb:'5 – 80',tempW:'5 – 30',ph:'6.5 – 8.5',o2:'> 5',debit:'0 – 0.5',zgomot:'< 50',tempA:'5 – 35',umid:'50 – 85',
+             notes:{turb:'preferă ape clare pentru vânat',zgomot:'perturbată de activitate umană'}},
+
+            {group:'pasari',badge:'b-bird',label:'Păsări',name:'Stârc cenușiu',latin:'Ardea cinerea',
+             turb:'5 – 100',tempW:'0 – 30',ph:'6.5 – 8.5',o2:'> 4',debit:'0 – 0.5',zgomot:'< 55',tempA:'0 – 35',umid:'50 – 85',
+             notes:{turb:'tolerant, vânează în ape puțin tulburi',tempW:'prezent tot anul dacă apa nu îngheață'}},
+        ];
+
+        const fields = ['turb','tempW','ph','o2','debit','zgomot','tempA','umid'];
+
+        function render(rows){
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '';
+            rows.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.dataset.group = r.group;
+                tr.dataset.name = (r.name + ' ' + r.latin).toLowerCase();
+                let cells = `<td><span class="badge ${r.badge}">${r.label}</span><br><span class="species-name">${r.name}</span><br><span class="note">${r.latin}</span></td>`;
+                fields.forEach(f => {
+                    const note = r.notes && r.notes[f] ? `<div class="note">${r.notes[f]}</div>` : '';
+                    cells += `<td><div class="val">${r[f]}</div>${note}</td>`;
+                });
+                tr.innerHTML = cells;
+                tbody.appendChild(tr);
+            });
+        }
+
+        render(data);
+
+        let activeGroup = 'all';
+        document.querySelectorAll('.group-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.group-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeGroup = btn.dataset.group;
+                filterRows();
+            });
+        });
+
+        document.getElementById('search').addEventListener('input', filterRows);
+
+        function filterRows(){
+            const q = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('#tbody tr').forEach(tr => {
+                const matchGroup = activeGroup === 'all' || tr.dataset.group === activeGroup;
+                const matchSearch = !q || tr.dataset.name.includes(q);
+                tr.classList.toggle('hidden', !(matchGroup && matchSearch));
+            });
+        }
+    </script>
 </body>
 </html>

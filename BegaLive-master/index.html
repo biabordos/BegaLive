@@ -3,728 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BegaLive – Monitorizare Ecosistem Timișoara</title>
+    <title>BegaLive – Bine ai venit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --teal-deep:    #042f2e;
             --teal-dark:    #0d4f4c;
-            --teal-mid:     #0f766e;
             --teal-bright:  #14b8a6;
-            --teal-light:   #5eead4;
-            --teal-pale:    #ccfbf1;
-            --green-dark:   #14532d;
-            --green-mid:    #16a34a;
-            --green-bright: #4ade80;
-            --blue-deep:    #0c2340;
-            --blue-mid:     #0369a1;
-            --blue-bright:  #38bdf8;
             --text-primary: #f0fdfa;
-            --text-secondary: #99f6e4;
             --text-muted:   #5eead4;
-            --glass:        rgba(13, 79, 76, 0.45);
+            --glass:        rgba(13, 79, 76, 0.35);
             --glass-border: rgba(94, 234, 212, 0.2);
             --font-display: 'DM Serif Display', serif;
             --font-body:    'Outfit', sans-serif;
             --font-mono:    'DM Mono', monospace;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { background: var(--teal-deep); color: var(--text-primary); font-family: var(--font-body); overflow-x: hidden; }
-
-        body::before {
-            content: ''; position: fixed; inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: 9999; opacity: 0.4;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top, rgba(20,184,166,0.15), transparent 40%), linear-gradient(135deg, #042f2e 0%, #071a19 100%);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-
-        header { position: relative; padding: 0; background: linear-gradient(135deg, var(--blue-deep) 0%, var(--teal-deep) 40%, var(--green-dark) 100%); overflow: hidden; min-height: 180px; display: flex; align-items: center; }
-        header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--teal-bright), var(--green-bright), transparent); }
-        .header-bg-circle { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
-        .header-bg-circle:nth-child(1) { width: 400px; height: 400px; background: radial-gradient(circle, rgba(20,184,166,0.25), transparent); top: -150px; left: -100px; }
-        .header-bg-circle:nth-child(2) { width: 300px; height: 300px; background: radial-gradient(circle, rgba(74,222,128,0.15), transparent); top: -80px; right: 100px; }
-        .header-content { position: relative; z-index: 2; padding: 40px 48px; display: flex; align-items: center; justify-content: space-between; width: 100%; }
-        .header-left { flex: 1; }
-        .header-eyebrow { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase; color: var(--teal-bright); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .live-pip { width: 7px; height: 7px; background: var(--green-bright); border-radius: 50%; animation: pip 1.8s ease-in-out infinite; display: inline-block; }
-        @keyframes pip { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,0.6); } 50% { opacity: 0.5; box-shadow: 0 0 0 6px rgba(74,222,128,0); } }
-        h1 { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 400; line-height: 1.1; color: var(--text-primary); letter-spacing: -0.5px; }
-        h1 em { font-style: italic; color: var(--teal-light); }
-        .header-sub { font-size: 0.95rem; color: var(--text-muted); margin-top: 10px; font-weight: 300; letter-spacing: 0.3px; }
-        .header-stats { display: flex; gap: 32px; flex-shrink: 0; }
-        .hstat { text-align: center; padding: 16px 24px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; backdrop-filter: blur(12px); }
-        .hstat-val { font-family: var(--font-display); font-size: 2rem; color: var(--teal-light); line-height: 1; }
-        .hstat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; font-family: var(--font-mono); }
-
-        .main-grid { display: grid; grid-template-columns: 1fr 380px; grid-template-rows: 1fr auto; gap: 0; height: calc(100vh - 180px); }
-        .map-section { position: relative; grid-row: 1; grid-column: 1; overflow: hidden; height: 100%; }
-        
-        #map3d, #map2d { width: 100%; height: 100%; background-color: #071a19; position: absolute; top: 0; left: 0; z-index: 1; }
-        #map2d { z-index: 2; display: none; } 
-
-        .map-legend { position: absolute; bottom: 24px; right: 0; transform: translateX(calc(100% - 36px)); background: rgba(4, 47, 46, 0.92); border: 1px solid var(--glass-border); border-right: none; border-radius: 12px 0 0 12px; padding: 16px 20px 16px 40px; backdrop-filter: blur(16px); z-index: 10; min-width: 220px; box-shadow: -4px 8px 32px rgba(0,0,0,0.4); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .map-legend::before { content: '◀ SCOR'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; text-orientation: mixed; color: var(--teal-bright); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 2px; opacity: 0.8; cursor: pointer; }
-        .map-legend:hover { transform: translateX(0); }
-        .legend-title { font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 3px; color: var(--teal-bright); margin-bottom: 12px; }
-        .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.78rem; color: var(--text-secondary); font-family: var(--font-mono); }
-        .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
-
-        .viewer-section { grid-row: 2; grid-column: 1; padding: 0; position: relative; background: linear-gradient(180deg, #071a19 0%, var(--teal-deep) 100%); border-top: 1px solid var(--glass-border); z-index: 5; }
-        .viewer-header { padding: 20px 28px 20px; display: flex; align-items: center; justify-content: space-between; }
-        .viewer-title { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: var(--teal-bright); }
-        .viewer-controls { display: flex; gap: 8px; }
-        .btn-secondary { padding: 6px 16px; background: rgba(20,184,166,0.1); border: 1px solid var(--teal-mid); color: var(--teal-light); font-family: var(--font-mono); font-size: 0.7rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; letter-spacing: 1px; }
-        .btn-secondary:hover { background: rgba(20,184,166,0.3); border-color: var(--teal-bright); }
-
-        .data-panel { grid-row: 1 / 3; grid-column: 2; background: linear-gradient(180deg, #071a19 0%, #050f0e 100%); border-left: 1px solid var(--glass-border); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--teal-dark) transparent; }
-        .panel-section { padding: 24px; border-bottom: 1px solid rgba(94,234,212,0.08); }
-        .panel-section h2 { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 3px; color: var(--teal-bright); margin-bottom: 16px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .stat-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 10px; padding: 14px; transition: border-color 0.2s; }
-        .stat-card:hover { border-color: var(--teal-bright); }
-        .stat-label { font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.5px; margin-bottom: 6px; }
-        .stat-value { font-family: var(--font-display); font-size: 1.4rem; color: var(--teal-light); line-height: 1; }
-        .chart-wrap { position: relative; height: 140px; }
-        .stations-list { display: flex; flex-direction: column; gap: 6px; }
-        .station-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: rgba(13,79,76,0.3); border: 1px solid transparent; cursor: pointer; transition: all 0.2s; font-size: 0.78rem; }
-        .station-item:hover { border-color: var(--glass-border); background: rgba(13,79,76,0.6); }
-        .station-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; animation: pip 2s ease-in-out infinite; }
-        .station-name { flex: 1; color: var(--text-secondary); }
-        .station-score { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; }
-        .btn { display: block; width: 100%; padding: 10px; margin-bottom: 8px; background: linear-gradient(135deg, var(--teal-dark), var(--green-dark)); border: 1px solid var(--glass-border); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.72rem; border-radius: 8px; cursor: pointer; letter-spacing: 1px; transition: all 0.2s; }
-        .btn:hover { background: linear-gradient(135deg, var(--teal-mid), var(--green-mid)); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(20,184,166,0.2); }
-
-        .description-section { background: linear-gradient(180deg, var(--teal-deep) 0%, var(--blue-deep) 100%); padding: 80px 48px; position: relative; overflow: hidden; }
-        .description-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--teal-bright), transparent); }
-        .desc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .desc-intro { grid-column: 1 / -1; text-align: center; margin-bottom: 20px; }
-        .desc-intro h2 { font-family: var(--font-display); font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 400; color: var(--text-primary); margin-bottom: 16px; }
-        .desc-intro h2 em { font-style: italic; color: var(--teal-light); }
-        .desc-intro p { font-size: 1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.7; font-weight: 300; }
-        .desc-card { padding: 32px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; backdrop-filter: blur(12px); transition: transform 0.3s, border-color 0.3s; }
-        .desc-card:hover { transform: translateY(-4px); border-color: var(--teal-bright); }
-        .desc-icon { font-size: 2rem; margin-bottom: 16px; display: block; }
-        .desc-card h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 400; color: var(--teal-light); margin-bottom: 12px; }
-        .desc-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; font-weight: 300; }
-        .desc-pill { display: inline-block; margin-top: 14px; padding: 4px 12px; background: rgba(20,184,166,0.1); border: 1px solid rgba(20,184,166,0.3); border-radius: 20px; font-family: var(--font-mono); font-size: 0.65rem; color: var(--teal-bright); letter-spacing: 1px; }
-
-        footer { padding: 24px 48px; background: #020d0c; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; }
-        footer p { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; }
-
-        #tooltip3d { position: fixed; display: none; pointer-events: none; z-index: 9999; background: rgba(4,47,46,0.97); border: 1px solid rgba(94,234,212,0.3); border-radius: 10px; color: var(--text-primary); font-family: var(--font-mono); font-size: 12px; padding: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); min-width: 220px; backdrop-filter: blur(8px); }
-        .leaflet-popup-content-wrapper { background: rgba(4,47,46,0.97) !important; border: 1px solid rgba(94,234,212,0.3) !important; border-radius: 10px !important; color: var(--text-primary) !important; font-family: var(--font-mono) !important; font-size: 12px !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; }
-        .leaflet-popup-tip { background: rgba(4,47,46,0.97) !important; }
-        .leaflet-container { background: #071a19 !important; font-family: var(--font-mono); }
-
-        .popup-title { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--teal-light); margin-bottom: 10px; }
-        .popup-row { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 5px; font-size: 11px; }
-        .popup-label { color: var(--text-muted); }
-        .popup-val { font-weight: 500; color: var(--text-primary); }
-        .popup-alert { margin-top: 8px; padding: 6px 8px; background: rgba(239,68,68,0.1); border-left: 2px solid #ef4444; font-size: 10px; line-height: 1.5; border-radius: 2px; color: #fca5a5; }
-
-        .data-panel::-webkit-scrollbar { width: 3px; }
-        .data-panel::-webkit-scrollbar-track { background: transparent; }
-        .data-panel::-webkit-scrollbar-thumb { background: var(--teal-dark); border-radius: 2px; }
-        
-        /* ANIMAȚII NOI PENTRU PLOAIE ȘI TIMELINE */
-        @keyframes birdFloat { 0%,100% { transform:translateX(-50%) translateY(0px) rotate(-5deg); } 50% { transform:translateX(-50%) translateY(-5px) rotate(5deg); } }
-        @keyframes waterFlow { 0% { background-position: 100% 0; } 100% { background-position: 0% 0; } }
-        
-        .raindrop {
-  position: absolute;
-  top: -160px;
-  width: 90px;
-  height: 130px;
-  background: linear-gradient(160deg, rgba(56,189,248,0.85) 0%, rgba(20,184,166,0.7) 60%, rgba(14,116,144,0.5) 100%);
-  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-  clip-path: polygon(50% 0%, 85% 35%, 100% 60%, 85% 85%, 50% 100%, 15% 85%, 0% 60%, 15% 35%);
-  animation: dropFall 2.2s ease-in infinite;
-  border: 1.5px solid rgba(94,234,212,0.6);
-  box-shadow: inset 0 0 18px rgba(56,189,248,0.3), 0 0 12px rgba(56,189,248,0.4);
-  filter: drop-shadow(0 0 10px rgba(56,189,248,0.6));
-}
-.raindrop img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.88;
-}
-@keyframes dropFall {
-  0%   { top:-160px; opacity:0; }
-  15%  { opacity:1; }
-  85%  { opacity:0.8; }
-  100% { top:240px; opacity:0; }
-}
+        .welcome-container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 400;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        h1 em { font-style: italic; color: var(--teal-bright); }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 48px;
+            font-weight: 300;
+        }
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            width: 100%;
+        }
+        .portal-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 32px;
+            backdrop-filter: blur(16px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .portal-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--teal-bright);
+            box-shadow: 0 30px 60px rgba(20,184,166,0.15);
+        }
+        .icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 12px rgba(20,184,166,0.3));
+        }
+        .portal-card h2 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+            font-weight: 400;
+        }
+        .portal-card p {
+            color: #99f6e4;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-weight: 300;
+            flex-grow: 1;
+        }
+        .portal-btn {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 12px 28px;
+            border-radius: 8px;
+            border: 1px solid var(--teal-bright);
+            background: rgba(20,184,166,0.1);
+            color: var(--teal-bright);
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .portal-card:hover .portal-btn {
+            background: var(--teal-bright);
+            color: var(--teal-deep);
+        }
+        @media (max-width: 650px) {
+            .portal-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="header-bg-circle"></div>
-    <div class="header-bg-circle"></div>
-    <div class="header-content">
-        <div class="header-left">
-            <div class="header-eyebrow">
-                <span class="live-pip"></span>
-                Sistem de monitorizare · Timișoara · România
+    <div class="welcome-container">
+        <h1>Bega<em>Live</em></h1>
+        <p class="subtitle">Selectează modul de interacțiune cu ecosistemul râului Bega</p>
+        
+        <div class="portal-grid">
+            <div class="portal-card" onclick="selectRole('cetatean')">
+                <div class="icon">🌿</div>
+                <h2>Explorator Urban</h2>
+                <p>Descoperă starea generală a râului, explorează biodiversitatea malurilor și parcurge timeline-ul istoric al ecosistemului din Timișoara.</p>
+                <button class="portal-btn">Accesează Platforma</button>
             </div>
-            <h1>Bega<em>Live</em></h1>
-            <p class="header-sub">Ecosistemul râului Bega în timp real — date, analiză, intervenție</p>
-        </div>
-        <div class="header-stats">
-            <div class="hstat">
-                <div class="hstat-val" id="globalScore">42</div>
-                <div class="hstat-label">Scor ecosistem</div>
-            </div>
-            <div class="hstat">
-                <div class="hstat-val">4</div>
-                <div class="hstat-label">Noduri active</div>
-            </div>
-            <div class="hstat">
-                <div class="hstat-val" id="alertCount">0</div>
-                <div class="hstat-label">Alerte active</div>
+
+            <div class="portal-card" onclick="selectRole('cercetator')">
+                <div class="icon">🔬</div>
+                <h2>Cercetător / Specialist</h2>
+                <p>Accesează datele tehnice brute de telemetrie, instrumentele avansate de simulare în timp real, configurările senzorilor IoT și carcasele 3D.</p>
+                <button class="portal-btn">Panou Tehnic complet</button>
             </div>
         </div>
     </div>
-</header>
 
-<div class="main-grid">
-    <div class="map-section">
-        <div id="map3d"></div>
-        <div id="map2d"></div>
-        
-        <div id="tooltip3d"></div>
-
-        <div class="map-legend">
-            <div class="legend-title">Scor ecosistem</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#4ade80;color:#4ade80"></div> Sănătos · &gt;70</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#facc15;color:#facc15"></div> Moderat · 40–70</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#ef4444;color:#ef4444"></div> Critic · &lt;40</div>
-            <div style="height:1px;background:rgba(94,234,212,0.15);margin:10px 0"></div>
-            <div class="legend-item" style="font-size:0.7rem"><span style="font-size:1rem">🦇</span> Lilieci · zonă nocturnă</div>
-            <div class="legend-item" style="font-size:0.7rem"><span style="font-size:1rem">🐸</span> Amfibieni · zone umede</div>
-            <div class="legend-item" style="font-size:0.7rem"><span style="font-size:1rem">🦆</span> Păsări · zone deschise</div>
-        </div>
-    </div>
-
-    <div class="viewer-section">
-        <div class="viewer-header">
-            <div class="viewer-title">▸ Vizualizare Spațială</div>
-            <div class="viewer-controls">
-    <button class="btn-secondary" onclick="window.open('specii.html', '_blank')">🌿 Detalii specii</button>
-    
-    <button id="toggleMapBtn" class="btn-secondary" style="font-weight: bold;" onclick="toggleMapMode()">MAPA 2D</button>
-    <button id="resetCamera" class="btn-secondary" onclick="resetCam()">Reset cameră</button>
-    <button class="btn-secondary" onclick="window.open('senzor.html', '_blank')">🧪 Vizualizează senzor</button>
-</div>
-        </div>
-    </div>
-
-    <div class="data-panel">
-        <div class="panel-section">
-            <h2>Condiții curente</h2>
-            <div class="stats-grid">
-                <div class="stat-card"><div class="stat-label">Temp. medie apă</div><div class="stat-value" id="avgTemp">–</div></div>
-                <div class="stat-card"><div class="stat-label">Debit</div><div class="stat-value" id="waterFlow">–</div></div>
-                <div class="stat-card"><div class="stat-label">pH</div><div class="stat-value" id="phLevel">–</div></div>
-                <div class="stat-card"><div class="stat-label">Oxigen dizolvat</div><div class="stat-value" id="oxygenLevel">–</div></div>
-            </div>
-        </div>
-
-        <div class="panel-section">
-            <h2>Temperatură apă · 24h</h2>
-            <div class="chart-wrap">
-                <canvas id="tempChart"></canvas>
-            </div>
-        </div>
-
-        <div class="panel-section">
-            <h2>Noduri monitorizare</h2>
-            <div id="stationsList" class="stations-list"></div>
-        </div>
-
-        <div class="panel-section">
-            <h2>Acțiuni</h2>
-            <button class="btn" onclick="updateData()">↻ Actualizează date</button>
-            <button class="btn" id="simBtn" onclick="toggleSimulation()">▶ Pornește simulare</button>
-            <button class="btn" onclick="downloadReport()">↓ Descarcă raport</button>
-        </div>
-    </div>
-</div>
-
-<div id="rain-transition" style="position:relative; overflow:hidden; height:240px; pointer-events:none;">
-  <div class="raindrop" style="left:8%; animation-delay:0s;"></div>
-  <div class="raindrop" style="left:25%; animation-delay:0.5s;"></div>
-  <div class="raindrop" style="left:45%; animation-delay:0.2s;"></div>
-  <div class="raindrop" style="left:65%; animation-delay:0.7s;"></div>
-  <div class="raindrop" style="left:82%; animation-delay:0.35s;"></div>
-</div>
-
-<div class="description-section">
-    <div class="desc-grid">
-        <div class="desc-intro">
-            <h2>De ce <em>BegaLive</em>?</h2>
-            <p>Râul Bega traversează Timișoara ca un ecosistem viu — dar invizibil. BegaLive face vizibile datele despre sănătatea apei, biodiversitate și conectivitatea ecologică a orașului.</p>
-        </div>
-        
-        <div class="timeline-section" style="grid-column: 1 / -1; margin: 20px 0 40px 0;">
-          <div class="timeline-wrapper" style="position:relative; padding: 40px 60px 20px;">
-            
-            <div id="hbird" style="position:absolute; top:-18px; left:60px; transform:translateX(-50%); font-size:2.6rem; transition:left 0.08s ease; pointer-events:none; z-index:10; filter:drop-shadow(0 0 6px #14b8a6) drop-shadow(0 0 14px #38bdf8) drop-shadow(0 0 2px #4ade80); animation:birdFloat 2.5s ease-in-out infinite;">🦜</div>
-
-            <div id="timeline-bar" style="position:relative; height:6px; background:linear-gradient(90deg, #14532d 0%, #166534 10%, #15803d 20%, #16a34a 30%, #0d9488 42%, #0f766e 50%, #14b8a6 60%, #22d3ee 72%, #38bdf8 82%, #7dd3fc 92%, #bae6fd 100%); border-radius:20px; cursor:pointer; margin:40px 0 20px 0; box-shadow: 0 0 12px rgba(20,184,166,0.4), 0 0 24px rgba(56,189,248,0.2); animation:waterFlow 3s linear infinite; background-size:200% 100%;">
-              
-              <div style="position:absolute; left:0%; top:-8px; width:2px; height:20px; background:#5eead4;"></div>
-              <div style="position:absolute; left:38%; top:-8px; width:2px; height:20px; background:#5eead4;"></div>
-              <div style="position:absolute; left:50%; top:-8px; width:2px; height:20px; background:#5eead4;"></div>
-              <div style="position:absolute; left:76%; top:-8px; width:2px; height:20px; background:#5eead4;"></div>
-              <div style="position:absolute; left:100%; top:-8px; width:2px; height:20px; background:#5eead4;"></div>
-
-              <div style="position:absolute; left:0%; top:20px; transform:translateX(-50%); font-family:'DM Mono',monospace; font-size:0.85rem; color:#5eead4; font-weight:600;">1950</div>
-              <div style="position:absolute; left:38%; top:20px; transform:translateX(-50%); font-family:'DM Mono',monospace; font-size:0.85rem; color:#5eead4; font-weight:600;">1980</div>
-              <div style="position:absolute; left:50%; top:20px; transform:translateX(-50%); font-family:'DM Mono',monospace; font-size:0.85rem; color:#5eead4; font-weight:600;">2000</div>
-              <div style="position:absolute; left:76%; top:20px; transform:translateX(-50%); font-family:'DM Mono',monospace; font-size:0.85rem; color:#5eead4; font-weight:600;">2010</div>
-              <div style="position:absolute; left:100%; top:20px; transform:translateX(-50%); font-family:'DM Mono',monospace; font-size:0.85rem; color:#5eead4; font-weight:600;">2026</div>
-            </div>
-
-            <div id="timeline-info" style="margin-top:50px; padding:28px 32px; background:rgba(13,79,76,0.45); border:1px solid rgba(94,234,212,0.2); border-radius:16px; backdrop-filter:blur(12px); min-height:120px; transition: all 0.3s ease;">
-              <div id="timeline-year" style="font-family:'DM Mono',monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:3px; color:#14b8a6; margin-bottom:10px;">— Selectează un an —</div>
-              <div id="timeline-text" style="font-family:'Outfit',sans-serif; font-size:0.92rem; color:#99f6e4; line-height:1.7; font-weight:300;">Glisează cursorul de-a lungul axei pentru a descoperi flora și fauna Begăi</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="desc-card"><span class="desc-icon">🌊</span><h3>Monitorizare în timp real</h3><p>4 noduri distribuite de-a lungul Begăi măsoară continuu datele apei.</p><span class="desc-pill">SENZORI · DATE LIVE</span></div>
-        <div class="desc-card"><span class="desc-icon">🧬</span><h3>Algoritm BegaNet</h3><p>Analizăm spațiile verzi ca o rețea ecologică. Identificăm puncte critice pentru intervenții minime.</p><span class="desc-pill">GRAPH ALGORITHM</span></div>
-        <div class="desc-card"><span class="desc-icon">🚨</span><h3>Alerte automate</h3><p>Când senzorii detectează anomalii, sistemul notifică autoritățile relevante.</p><span class="desc-pill">ALERTĂ · AUTORITĂȚI</span></div>
-    </div>
-</div>
-
-<footer>
-    <p>BegaLive · Hackathon Renaturarea Infrastructurii Urbane · Timișoara 2026</p>
-    <p>UPT · Automatică și Calculatoare · An II</p>
-</footer>
-
-<script>
-// --- 1. DATE, COORDONATE 2D/3D ȘI LOGICĂ GENERARE ---
-const RIVER_BEGA = [
-    [45.7200, 21.0800], // Freidorf vest
-    [45.7300, 21.1500], // Freidorf est
-    [45.7392, 21.1858], // Podul Modoș
-    [45.7458, 21.2050], // Podul Iuliu Maniu
-    [45.7464, 21.2072], // Podul Eroilor
-    [45.7486, 21.2217], // Splaiul Tudor Vladimirescu
-    [45.7500, 21.2347], // Podul Michelangelo
-    [45.7560, 21.2486], // Podul Andrei Șaguna
-    [45.7603, 21.2486], // Podul Dacilor
-    [45.7650, 21.2900], // Fabric est
-    [45.7710, 21.3250], // ieșire est oraș
-];
-
-const NODURI = [
-    { id: 'n1', name: 'Nod Uzina de Apă', pos3D: { x: 121.00, y: 0.5, z: -82.00 }, pos2D: [45.765, 21.29] },
-    { id: 'n2', name: 'Nod Centru', pos3D: { x: 9.50, y: 0.5, z: -36.50 }, pos2D: [45.75, 21.2347] },
-    { id: 'n3', name: 'Nod Iosefin', pos3D: { x: -95.00, y: 0.5, z: -16.50 }, pos2D: [45.7464, 21.2072] },
-    { id: 'n4', name: 'Nod Freidorf', pos3D: { x: -149.50, y: 0.5, z: 10.00 }, pos2D: [45.73, 21.15] }
-];
-
-const ANIMALE = [
-    { id: 'anim1', nume: 'Amfibieni, egreta și stârc cenușiu', descriere: 'Zona Fabric / Parcul Botanic. 9 specii de amfibieni protejați documentate: broasca râioasă brună, broasca râioasă verde, broasca roșie de pădure, brotăcel. Egrete și stârci cenușii frecvente pe maluri.', pos3D: { x: 115.00, y: 0.5, z: -75.00 }, icon: '🐸' },
-    { id: 'anim2', nume: '23 de specii de pești', descriere: 'Sectorul urban central, studiat de Lucian Pârvulescu (UVT). 23 specii de pești documentate: crap, caras, avat, biban, șalău, somn, platică, roșioară, oblete, mreană, lin și altele. Rațe sălbatice și egrete prezente.', pos3D: { x: 15.00, y: 0.5, z: -30.00 }, icon: '🐟' },
-    { id: 'anim3', nume: 'Nutrii', descriere: 'Colonii de nutrii (Myocastor coypus) documentate și filmate, inclusiv un exemplar alb. Nutria – mamifer semiacvatic originar din America de Sud, aclimatizat pe Bega. Activ dimineața devreme și seara.', pos3D: { x: -140.00, y: 0.5, z: 15.00 }, icon: '🦦' }
-];
-
-function simDate() {
-    const h = new Date().getHours(); const noapte = h < 6 || h > 22;
-    return {
-        temperatura: +(Math.random()*8 + (noapte?8:13)).toFixed(1),
-        turbiditate: +(Math.random()*40+10).toFixed(1),
-        ph:          +(Math.random()*2.5+6.2).toFixed(2),
-        oxigen:      +(Math.random()*5+(noapte?7:5)).toFixed(1),
-        zgomot:      +(Math.random()*25+(noapte?42:58)).toFixed(1),
-        nivel:       +(Math.random()*0.8+1.2).toFixed(2),
-    };
-}
-
-function scor(d) {
-    let s = 100;
-    if(d.temperatura>20) s-=20; else if(d.temperatura>16) s-=8;
-    if(d.turbiditate>60) s-=25; else if(d.turbiditate>35) s-=10;
-    if(d.ph<6.5||d.ph>8.5) s-=20; else if(d.ph<7||d.ph>8) s-=5;
-    if(d.oxigen<5) s-=25; else if(d.oxigen<7) s-=10;
-    if(d.zgomot>65) s-=15; else if(d.zgomot>55) s-=5;
-    return Math.max(5, Math.min(100, Math.round(s)));
-}
-
-function culoare(s) {
-    if(s>=70) return '#4ade80';
-    if(s>=40) return '#facc15';
-    return '#ef4444';
-}
-
-let stare = {};
-NODURI.forEach(n => { const d=simDate(); stare[n.id]={...d, scor:scor(d)}; });
-
-function popupHtml(nod, d) {
-    const c = culoare(d.scor);
-    const alertHTML = d.turbiditate>60 ? `<div class="popup-alert">⚠ Turbiditate critică – posibilă deversare ilegală</div>` : d.zgomot>65 ? `<div class="popup-alert">🔊 Zgomot ridicat – fauna nocturnă perturbată</div>` : '';
-    return `<div class="popup-title">${nod.name}</div>
-    <div class="popup-row"><span class="popup-label">Scor</span><span class="popup-val" style="color:${c}">${d.scor}/100</span></div>
-    <div class="popup-row"><span class="popup-label">Temperatură</span><span class="popup-val">${d.temperatura}°C</span></div>
-    <div class="popup-row"><span class="popup-label">Turbiditate</span><span class="popup-val">${d.turbiditate} NTU</span></div>
-    <div class="popup-row"><span class="popup-label">pH</span><span class="popup-val">${d.ph}</span></div>
-    <div class="popup-row"><span class="popup-label">Oxigen</span><span class="popup-val">${d.oxigen} mg/L</span></div>
-    <div class="popup-row"><span class="popup-label">Zgomot</span><span class="popup-val">${d.zgomot} dB</span></div>${alertHTML}`;
-}
-
-// --- 2. HARTA 2D LEAFLET ---
-let map2d, markere2D = {};
-function init2DMap() {
-    map2d = L.map('map2d').setView([45.7500, 21.2200], 13);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 19
-    }).addTo(map2d);
-
-    L.polyline(RIVER_BEGA, { color: '#38bdf8', weight: 5, opacity: 0.9 }).addTo(map2d);
-
-    NODURI.forEach(nod => {
-        const d = stare[nod.id];
-        const icon = getLeafletIcon(culoare(d.scor));
-        const marker = L.marker(nod.pos2D, { icon: icon }).addTo(map2d);
-        marker.bindPopup(popupHtml(nod, d), { maxWidth: 220 });
-        markere2D[nod.id] = marker;
-    });
-}
-
-function getLeafletIcon(color) {
-    return L.divIcon({
-        className: '',
-        html: `<div style="width:18px;height:18px;background:${color};border-radius:50%;border:2px solid rgba(255,255,255,0.25);box-shadow:0 0 14px ${color}88;animation:nodPulse 2s ease-in-out infinite"></div>`,
-        iconSize: [18,18], iconAnchor: [9,9]
-    });
-}
-init2DMap();
-
-
-// --- 3. HARTA 3D THREE.JS ---
-let scene, camera, renderer, controls, markere3D = {};
-let spritesAnimale = []; 
-const map3dDiv = document.getElementById('map3d');
-
-scene = new THREE.Scene();
-scene.background = new THREE.Color('#071a19'); 
-camera = new THREE.PerspectiveCamera(45, map3dDiv.clientWidth / map3dDiv.clientHeight, 0.1, 1000);
-camera.position.set(0, 15, 20);
-
-renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
-renderer.setSize(map3dDiv.clientWidth, map3dDiv.clientHeight);
-renderer.shadowMap.enabled = true;
-map3dDiv.appendChild(renderer.domElement);
-
-controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; controls.dampingFactor = 0.05; controls.maxPolarAngle = Math.PI / 2 - 0.1;
-
-scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(10, 20, 10);
-scene.add(dirLight);
-
-const loader = new THREE.GLTFLoader();
-loader.load('models/harta.glb', function (gltf) {
-    const model = gltf.scene; model.scale.set(1, 1, 1); model.position.set(0, 0, 0); scene.add(model);
-    initSpheres(); 
-    initAnimale(); 
-}, undefined, function (error) {
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.MeshLambertMaterial({color: 0x113333})); ground.rotation.x = -Math.PI / 2; scene.add(ground);
-    initSpheres();
-    initAnimale();
-});
-
-// A. Logica Senzorilor (Sfere)
-function initSpheres() {
-    const geometry = new THREE.SphereGeometry(1.2, 32, 32); 
-    NODURI.forEach(nod => {
-        const c = culoare(stare[nod.id].scor);
-        const material = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.6, roughness: 0.2 });
-        const sphere = new THREE.Mesh(geometry, material);
-        sphere.position.set(nod.pos3D.x, nod.pos3D.y, nod.pos3D.z);
-        sphere.userData = { date: nod, tip: 'senzor' };
-        scene.add(sphere);
-        markere3D[nod.id] = sphere;
-    });
-}
-
-// B. Logica Animalelor (FUNDAL ALB + SCALĂ MĂRITĂ)
-function creareTexturaAnimal(emoji) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 128; canvas.height = 128;
-    const context = canvas.getContext('2d');
-
-    context.fillStyle = 'rgba(255, 255, 255, 0.95)'; 
-    context.beginPath();
-    context.arc(64, 64, 50, 0, Math.PI * 2);
-    context.fill();
-    
-    context.lineWidth = 4;
-    context.strokeStyle = '#0f766e';
-    context.stroke();
-
-    context.font = '60px Arial';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText(emoji, 64, 70); 
-
-    return new THREE.CanvasTexture(canvas);
-}
-
-function initAnimale() {
-    ANIMALE.forEach(anim => {
-        const textura = creareTexturaAnimal(anim.icon);
-        const material = new THREE.SpriteMaterial({ map: textura, transparent: true });
-        const sprite = new THREE.Sprite(material);
-        
-        sprite.scale.set(7, 7, 1);
-        sprite.position.set(anim.pos3D.x, anim.pos3D.y + 5, anim.pos3D.z); 
-        sprite.userData = { date: anim, tip: 'animal' };
-        
-        scene.add(sprite);
-        spritesAnimale.push(sprite);
-    });
-}
-
-// Raycaster comun (Senzori și Animale)
-const raycaster = new THREE.Raycaster(); const mouse = new THREE.Vector2(); const tooltip = document.getElementById('tooltip3d');
-map3dDiv.addEventListener('mousemove', (event) => {
-    const rect = renderer.domElement.getBoundingClientRect();
-    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1; mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    
-    const toateObiectele = [...Object.values(markere3D), ...spritesAnimale];
-    const intersects = raycaster.intersectObjects(toateObiectele);
-    
-    if (intersects.length > 0) {
-        document.body.style.cursor = 'pointer';
-        const object = intersects[0].object; 
-        
-        if(object.userData.tip === 'senzor') {
-            const infoLive = stare[object.userData.date.id];
-            tooltip.style.maxWidth = '220px'; 
-            tooltip.innerHTML = popupHtml(object.userData.date, infoLive); 
-            object.scale.set(1.5, 1.5, 1.5);
-        } else {
-            tooltip.style.maxWidth = '280px'; 
-            tooltip.innerHTML = `
-                <div class="popup-title" style="margin:0; text-align:center; color:#fff; font-size: 16px;">
-                    ${object.userData.date.nume} <br>
-                    <span style="font-size: 32px; display:block; margin: 10px 0;">${object.userData.date.icon}</span>
-                </div>
-                <div style="color: var(--text-secondary); font-family: var(--font-body); font-size: 12px; line-height: 1.5; text-align: center; margin-bottom: 12px;">
-                    ${object.userData.date.descriere}
-                </div>
-                <div style="text-align: center;">
-                    <span style="display:inline-block; padding:6px 12px; background:rgba(20,184,166,0.15); border:1px solid var(--teal-bright); color:var(--text-primary); border-radius:6px; font-size:10px; font-family:var(--font-mono); letter-spacing: 0.5px;">
-                        🖱️ CLICK PE ICONIȚĂ PENTRU DETALII
-                    </span>
-                </div>`;
-            object.scale.set(8.5, 8.5, 1);
+    <script>
+        function selectRole(role) {
+            localStorage.setItem('begaLiveRole', role);
+            window.location.href = 'dashboard.html';
         }
-        
-        tooltip.style.display = 'block'; 
-        tooltip.style.left = (event.clientX + 15) + 'px'; 
-        tooltip.style.top = (event.clientY + 15) + 'px';
-    } else {
-        document.body.style.cursor = 'default'; 
-        tooltip.style.display = 'none'; 
-        
-        Object.values(markere3D).forEach(s => s.scale.set(1, 1, 1)); 
-        spritesAnimale.forEach(s => s.scale.set(7, 7, 1)); 
-    }
-});
-
-// --- LOGICĂ CLICK PENTRU A DESCHIDE PAGINA DE SPECII ---
-map3dDiv.addEventListener('click', (event) => {
-    const rect = renderer.domElement.getBoundingClientRect();
-    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    
-    const toateObiectele = [...Object.values(markere3D), ...spritesAnimale];
-    const intersects = raycaster.intersectObjects(toateObiectele);
-    
-    if (intersects.length > 0) {
-        const object = intersects[0].object; 
-        
-        if (object.userData.tip === 'animal') {
-            let ancora = "";
-            const nume = object.userData.date.nume.toLowerCase();
-            if (nume.includes('pești') || nume.includes('pesti')) ancora = "#pesti";
-            else if (nume.includes('amfibieni')) ancora = "#amfibieni";
-            else if (nume.includes('nutrii')) ancora = "#nutrii";
-            
-            window.open('specii.html' + ancora, '_blank');
-        }
-    }
-});
-
-function animate3D() {
-    requestAnimationFrame(animate3D); controls.update();
-    const time = Date.now() * 0.003;
-    
-    Object.values(markere3D).forEach((sphere, index) => { sphere.position.y = sphere.userData.date.pos3D.y + Math.sin(time + index) * 0.2; });
-    
-    spritesAnimale.forEach((sprite, index) => {
-        sprite.position.y = sprite.userData.date.pos3D.y + 5 + Math.sin(time * 0.8 + index) * 0.4;
-    });
-    
-    renderer.render(scene, camera);
-}
-animate3D();
-
-window.addEventListener('resize', () => {
-    camera.aspect = map3dDiv.clientWidth / map3dDiv.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(map3dDiv.clientWidth, map3dDiv.clientHeight);
-});
-
-
-// --- 4. UI, BUTON COMUTARE, DASHBOARD ȘI GRAFICE ---
-let is2DMode = false;
-function toggleMapMode() {
-    const map3dContainer = document.getElementById('map3d');
-    const map2dContainer = document.getElementById('map2d');
-    const btn = document.getElementById('toggleMapBtn');
-
-    is2DMode = !is2DMode;
-    if(is2DMode) {
-        map3dContainer.style.display = 'none';
-        map2dContainer.style.display = 'block';
-        btn.innerText = 'MAPA 3D';
-        btn.style.color = '#facc15'; 
-        map2d.invalidateSize(); 
-    } else {
-        map3dContainer.style.display = 'block';
-        map2dContainer.style.display = 'none';
-        btn.innerText = 'MAPA 2D';
-        btn.style.color = 'var(--teal-light)';
-    }
-}
-
-function redrawSidebar() {
-    const list = document.getElementById('stationsList'); list.innerHTML = '';
-    let totalScor=0, tempSum=0, phSum=0, oxSum=0;
-
-    NODURI.forEach(n => {
-        const d = stare[n.id]; totalScor += d.scor; tempSum += d.temperatura; phSum += d.ph; oxSum += d.oxigen;
-        const c = culoare(d.scor);
-        const div = document.createElement('div'); div.className = 'station-item';
-        div.innerHTML = `<div class="station-dot" style="background:${c};box-shadow:0 0 6px ${c}"></div><div class="station-name">${n.name}</div><div class="station-score" style="color:${c}">${d.scor}</div>`;
-        
-        div.onclick = () => { 
-            if(is2DMode) {
-                map2d.setView(n.pos2D, 15);
-                markere2D[n.id].openPopup();
-            } else {
-                const target = n.pos3D;
-                camera.position.set(target.x, target.y + 10, target.z + 10);
-                controls.target.set(target.x, target.y, target.z);
-            }
-        };
-        list.appendChild(div);
-    });
-
-    const cnt = NODURI.length;
-    document.getElementById('globalScore').textContent = Math.round(totalScor/cnt);
-    document.getElementById('avgTemp').textContent = (tempSum/cnt).toFixed(1)+'°C';
-    document.getElementById('phLevel').textContent = (phSum/cnt).toFixed(2);
-    document.getElementById('oxygenLevel').textContent = (oxSum/cnt).toFixed(1)+' mg/L';
-    document.getElementById('waterFlow').textContent = (Math.random()*500+1800).toFixed(0)+' m³/s';
-    document.getElementById('alertCount').textContent = NODURI.filter(n=>stare[n.id].turbiditate>60||stare[n.id].zgomot>65||stare[n.id].oxigen<5).length;
-}
-
-const ctx = document.getElementById('tempChart').getContext('2d');
-const labels = Array.from({length:12},(_,i)=>{ const h=(new Date().getHours()-11+i+24)%24; return h+':00'; });
-let tempChart = new Chart(ctx, {
-    type:'line',
-    data:{ labels, datasets:[{ data: labels.map(()=>+(Math.random()*8+10).toFixed(1)), borderColor:'#14b8a6', backgroundColor:'rgba(20,184,166,0.08)', borderWidth:2, pointRadius:2, tension:0.4, fill:true }] },
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:'#5eead4', font:{size:9}, maxTicksLimit:6 }, grid:{ color:'rgba(94,234,212,0.08)' } }, y:{ ticks:{ color:'#5eead4', font:{size:9} }, grid:{ color:'rgba(94,234,212,0.08)' } } } }
-});
-
-function updateData() {
-    NODURI.forEach(n => { 
-        const d = simDate(); stare[n.id] = {...d, scor:scor(d)}; 
-        const newColorHex = culoare(stare[n.id].scor);
-        
-        if(markere3D[n.id]) {
-            const newColor = new THREE.Color(newColorHex);
-            markere3D[n.id].material.color = newColor; markere3D[n.id].material.emissive = newColor;
-        }
-        
-        if(markere2D[n.id]) {
-            markere2D[n.id].setIcon(getLeafletIcon(newColorHex));
-            markere2D[n.id].setPopupContent(popupHtml(n, stare[n.id]));
-        }
-    });
-    
-    tempChart.data.datasets[0].data.shift(); tempChart.data.datasets[0].data.push(+(Math.random()*8+10).toFixed(1)); tempChart.update();
-    redrawSidebar();
-}
-
-let simInterval = null;
-function toggleSimulation() {
-    const btn = document.getElementById('simBtn');
-    if(simInterval) { clearInterval(simInterval); simInterval=null; btn.innerHTML = '▶ Pornește simulare'; btn.style.background = ''; }
-    else { simInterval = setInterval(updateData, 2000); btn.innerHTML = '⏸ Oprește simulare'; btn.style.background = '#ef4444'; } 
-}
-
-function downloadReport() { alert('Raport generat: BegaLive_' + new Date().toISOString().slice(0,10) + '.pdf'); }
-function resetCam() { camera.position.set(0, 15, 20); controls.target.set(0, 0, 0); map2d.setView([45.7500, 21.2200], 13); }
-
-redrawSidebar();
-
-// ── TIMELINE ─────────────────────────────────────────────
-const timelineData = {
-  1950: { year: '~ 1950', text: `<strong>FLORĂ</strong><br><br>Malurile Begăi erau dominate de sălcii pletoase seculare cu coroane de 15-20m, plop negru, arin de baltă și frasin de luncă. Acești copaci formau o galerie forestieră continuă de-a lungul apei — un tunel verde care menținea temperatura apei cu 3-4°C mai scăzută vara față de un mal betonat. Stuful (Phragmites australis) și papura (Typha latifolia) formau perdele naturale de 2-3m — adevărate fabrici biologice de oxigen și filtre pentru poluanți.<br><br>Menta de apă, angelica, sulfina galbenă și coada calului acopereau fiecare centimetru de mal umed. Nufărul alb (Nymphaea alba) și nufărul galben creșteau în zonele cu apă stătătoare, oferind umbră și adăpost pentru puietul de pește. Irisul de baltă colora malurile în violet în fiecare primăvară.<br><br><strong>FAUNĂ ACVATICĂ</strong><br><br>Știuca (Esox lucius) atingea lungimi de până la 1m și greutăți de 8-10kg în Bega. Somnul european (Silurus glanis) putea depăși 20kg — cel mai mare prădător al râului. Cleanul, roșioara, mreana, crapul sălbatic și bibanul completau o rețea trofică complexă și echilibrată. Densitatea peștilor era estimată la 5-8x mai mare decât azi.<br><br>Racul de râu (Astacus astacus) — complet dispărut din Bega azi — era atât de comun încât localnicii îl culegeau cu mâna de pe fundul râului în apa limpede. Scoicile de râu filtrau natural apa, fiecare exemplar curățând până la 50 de litri pe zi.<br><br><strong>FAUNĂ TERESTRĂ ȘI AERIANĂ</strong><br><br>Vidra europeană (Lutra lutra) patrula malurile în fiecare dimineață, lăsând urme caracteristice în nămolul de pe mal. Barza neagră (Ciconia nigra) — specie azi critic amenințată în România — cuibărea în lunca Begăi în arbori bătrâni. Berzele albe cuibăreau pe coșurile caselor din apropierea apei, indicator al unui ecosistem sănătos.<br><br>Broaștele de lac (Rana ridibunda) și broaștele râioase erau atât de numeroase încât nopțile de vară răsunau literalmente de cântecul lor — un concert biologic care azi aproape că nu mai există în sectoarele urbane. Nagâțul, rața mare, lișița și corcodelul mic cuibăreau toți de-a lungul Begăi. Liliecii vânau nestingheriți în întunericul complet al malurilor — iluminat public nu exista. Libelulele și fluturii de apă acopereau suprafața râului în zilele însorite, indicatori ai unei ape curate și oxigenate.` },
-  1980: { year: '~ 1980', text: `<strong>CE S-A SCHIMBAT</strong><br><br>Industrializarea accelerată a Timișoarei transformă Bega într-un canal industrial pe parcursul a doar două decenii. Uzinele textile, chimice și metalurgice deversează efluenți cu metale grele, coloranți sintetici, detergenți industriali și substanțe organice direct în Bega sau în pânza freatică care alimentează râul. Oxigenul dizolvat scade dramatic sub 4mg/L în sectoarele centrale ale orașului — pragul critic sub care majoritatea speciilor de pești mor asfixiați în câteva ore. Apa capătă culori nenaturale în funcție de ce se produce în fabricile din amonte: maro, cenușiu, uneori albăstrui.<br><br><strong>FLORĂ</strong><br><br>Sălciile seculare sunt tăiate sistematic în cadrul proiectelor de regularizare a albiei — inginerești impuse prin lege pentru controlul inundațiilor. Malurile betonate înlocuiesc pământul viu pe zeci de kilometri. Fără rădăcini care să stabilizeze malul, eroziunea se accelerează paradoxal. Apar primele plante invazive oportuniste: salcâmul american (Robinia pseudoacacia) cucerește rapid terenurile degradate și goale, bozul (Sambucus ebulus) formează tufișuri impenetrabile toxice care elimină complet vegetația nativă. Stuful rezistă doar în zonele periferice neafectate de betonare.<br><br><strong>FAUNĂ ACVATICĂ</strong><br><br>Știuca și somnul dispar aproape complet din sectoarele urbane ale Begăi — nu mai găsesc nici oxigen suficient, nici pradă, nici locuri de reproducere. Racul de râu european este decimat de ciuperca Aphanomyces astaci — adusă accidental din America prin racii americani introduși în acvacultură — față de care racii europeni nu au nicio imunitate. Specia dispare local în mai puțin de 5 ani. Supraviețuiesc în sectoarele urbane doar speciile tolerante la poluare: carasul argintiu (Carassius gibelio) — el însuși o specie invazivă asiatică — și bibanul. În zonele periferice, mreana și cleanul mai rezistă.<br><br><strong>FAUNĂ TERESTRĂ</strong><br><br>Vidra dispare din sectoarele centrale — nu mai găsește pești, iar apa otrăvită îi afectează blana impermeabilă. Stârcii cenușii și rațele sălbatice rezistă în zonele periferice unde stufărișurile supraviețuiesc. Liliecii vânează încă nestingheriți — iluminatul public era minimal, cu becuri rare și slabe. Broaștele de lac supraviețuiesc în zone izolate dar populațiile scad vizibil. Nagâțul și lișița dispar din sectoarele cu maluri betonate.` },
-  2000: { year: '~ 2000', text: `<strong>PARADOXUL TRANZIȚIEI</strong><br><br>Căderea industriei comuniste aduce accidental un răgaz pentru Bega. Fabricile închise sau privatizate produc cu 60-70% mai puțini efluenți industriali față de vârful anilor '80. Calitatea apei se îmbunătățește vizibil în sectoare unde fusese dezastruoasă — oxigenul dizolvat revine treptat la niveluri acceptabile. Dar natura nu se recuperează liniar și nu se recuperează singură când presiunile noi iau locul celor vechi.<br><br><strong>FLORĂ</strong><br><br>Fallopia japonica — planta invazivă originară din Japonia, introdusă inițial în Europa ca plantă ornamentală în secolul XIX — explodează pe malurile Begăi. Crește până la 10cm pe zi în lunile de vară, formează colonii monospecifice dense de 3-4m înălțime și produce substanțe alelopatice care otrăvesc chimic solul, împiedicând germinarea oricărei alte plante. Ailanthus altissima — arborele cerului, originar din China — colonizează orice teren viran, fisură în beton sau mal degradat. Împreună, aceste două specii transformă malurile Begăi în deșerturi biologice care arată verde dar nu adăpostesc aproape nimic.<br><br><strong>FAUNĂ</strong><br><br>Revin primele semne pozitive: corcodeii mari și mici apar pe sectoarele mai curate. Kingfisherul (Alcedo atthis) — pescărușul mic cu penaj turcoaz electric și portocaliu aprins, indicator biologic certificat de apă curată — este observat sporadic în câteva sectoare periferice. Cormoranul mare reapare ca oaspete de pasaj. Dar liliecii încep să evite din ce în ce mai mult sectoarele centrale — iluminatul stradal se extinde rapid în toată Timișoara. Broaștele de lac devin rare și izolate în zone tot mai mici.` },
-  2010: { year: '~ 2010', text: `<strong>POLUAREA INVIZIBILĂ</strong><br><br>Zgomotul și lumina artificială devin în această perioadă amenințările principale pentru fauna Begăi — invizibile, nemăsurate, complet ignorate în planificarea urbană a Timișoarei. Zgomotul nocturn depășește constant 65-70dB în sectoarele centrale ale Begăi — echivalentul unui aspirator industrial care funcționează non-stop toată noaptea, în fiecare noapte, 365 de zile pe an. Iluminatul stradal acoperă acum practic întregul traseu urban al râului.<br><br><strong>IMPACTUL ASUPRA LILIECILOR</strong><br><br>Liliecii comuni (Pipistrellus pipistrellus) și liliecii de apă (Myotis daubentonii) — care consumă fiecare între 2.000 și 3.000 de insecte pe noapte și vânează preferențial deasupra apei — își abandonează complet rutele tradiționale de vânătoare de pe Bega în sectoarele iluminate. Fără lilieci, populația de țânțari, muște de mai și alte insecte acvatice explodează necontrolat. Acest lucru perturbă întregul lanț trofic acvatic.<br><br><strong>SPECII INVAZIVE NOI</strong><br><br>Gâsca de Canada (Branta canadensis) formează primele colonii stabile și permanente pe Bega. Fiecare individ consumă 500g de vegetație acvatică și de mal pe zi și defechează direct în apă, crescând dramatic nivelul de nitrați și fosfați. O colonie de 50 de gâște produce zilnic echivalentul poluării organice a 50 de oameni. Peștele-soare (Lepomis gibbosus) — adus accidental prin acvarii — concurează agresiv cu speciile native. Broaștele de lac își pierd orientarea în timpul ritualurilor de împerechere din cauza luminii artificiale — populația urbană scade cu 60% față de 1990.` },
-  2026: { year: '2026 · Prezent', text: `<strong>STAREA ACTUALĂ</strong><br><br>Bega trăiește în 2026 o contradicție dureroasă și fascinantă în același timp — un râu sub presiuni acumulate de 70 de ani care dă totuși semne că vrea să trăiască. BegaLive măsoară această tensiune în timp real, cu date din 8 puncte de monitorizare distribuite de-a lungul orașului.<br><br><strong>AMENINȚĂRILE ACTIVE</strong><br><br>Speciile invazive — Fallopia japonica, Ailanthus altissima, gâsca de Canada, carasul argintiu, peștele-soare — controlează peste 40% din vegetația și fauna malurilor. Oxigenul dizolvat coboară la 4.8mg/L în iulie și august — zona roșie critică pentru fauna acvatică, sub pragul de supraviețuire pentru multe specii. Temperatura apei a crescut cu 2.3°C față de 1990 din cauza suprafețelor impermeabile care absorb căldura și a schimbărilor climatice. Microplasticele sunt prezente în sedimentele albiei în concentrații măsurabile. Zgomotul nocturn depășește 65dB în 5 din cele 8 sectoare monitorizate.<br><br><strong>SEMNE REALE DE SPERANȚĂ</strong><br><br>Vidra europeană a fost documentată fotografic în zona Fabric în septembrie 2024 — prima apariție confirmată după peste 30 de ani de absență completă. Prezența ei indică că acel sector a atins un prag minim de sănătate ecologică. Kingfisherii sunt prezenți și activi în 3 sectoare monitorizate. Cormoranii și stârcii cenușii revin în număr mai mare. Specii de plante medicinale native — menta de apă, sulfina, coada calului, pătlagina de apă — rezistă și se extind în sectoarele mai puțin umblate. Primele proiecte de renaturare a malurilor din zona Fabric arată rezultate măsurabile după 5 ani.<br><br><strong>CE POȚI FACE TU</strong><br><br>Raportează deversări suspecte sau schimbări bruște ale culorii apei prin BegaLive — un cetățean alert valorează cât un senzor. Nu elibera niciodată pești exotici din acvariu în râu — un singur pește-soare poate elimina o populație locală de roșioară în 2-3 sezoane. Susține proiectele de renaturare a malurilor. Pledează pentru iluminat stradal prietenos cu fauna nocturnă în zona Begăi. Plantează specii native în grădina ta dacă locuiești lângă râu.` },
-};
-
-function getTimelineText(pct) {
-  if (pct < 19) return timelineData[1950];
-  if (pct < 44) return timelineData[1980];
-  if (pct < 63) return timelineData[2000];
-  if (pct < 88) return timelineData[2010];
-  return timelineData[2026];
-}
-
-const bar = document.getElementById('timeline-bar');
-const bird = document.getElementById('hbird');
-const infoYear = document.getElementById('timeline-year');
-const infoText = document.getElementById('timeline-text');
-
-function updateTimeline(e) {
-  const rect = bar.getBoundingClientRect();
-  let pct = ((e.clientX - rect.left) / rect.width) * 100;
-  pct = Math.max(0, Math.min(100, pct));
-  const barLeft = bar.offsetLeft;
-  const barWidth = bar.offsetWidth;
-  bird.style.left = (barLeft + (pct / 100) * barWidth) + 'px';
-  const data = getTimelineText(pct);
-  infoYear.textContent = '— ' + data.year + ' —';
-  infoText.innerHTML = data.text;
-}
-
-bar.addEventListener('mousemove', updateTimeline);
-bar.addEventListener('click', updateTimeline);
-</script>
+    </script>
 </body>
 </html>
