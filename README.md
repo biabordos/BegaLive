@@ -1,4 +1,5 @@
 Bega River Monitoring System 🌊
+
 A modern, self-hosted web application for visualizing and monitoring the Bega River's environmental data including temperature, water quality, and flow rates.
 
 Features
