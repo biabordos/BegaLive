@@ -1,193 +1,337 @@
-# Bega River Monitoring System 🌊
+# BegaLive
 
-A modern, self-hosted web application for visualizing and monitoring the Bega River's environmental data including temperature, water quality, and flow rates.
+## Bega River Monitoring System
 
-## Features
+BegaLive is a web-based environmental monitoring interface designed to provide a visual overview of the Bega River through monitoring stations, environmental measurements, data visualizations, and an interactive 3D representation.
 
-* ✅ Interactive Map - Leaflet-based map with real-time station markers
-* ✅ Temperature Visualization - Color-coded markers (blue=cold, red=hot)
-* ✅ 24-Hour Trend Chart - Chart.js displaying temperature trends
-* ✅ Real-time Data - Live water quality metrics (pH, Oxygen, Turbidity)
-* ✅ Auto-Refresh - Data updates every 30 seconds (or 2s in simulation mode)
-* ✅ Data Export - Download monitoring reports as text files
-* ✅ Responsive Design - Works on desktop and mobile devices
-* ✅ Pure Frontend - No backend required, runs entirely in the browser
+The current version combines a browser-based interface with a simulated monitoring environment and a 3D river/map visualization. The project is structured to support further development toward a more complete monitoring platform.
 
-## Quick Start
+---
 
-### Option 1: Direct File Opening
-Simply open index.html in your web browser. Everything is included!
+## Overview
 
-### Option 2: Local Web Server (Recommended)
-# Using Python 3
-python -m http.server 8000
+BegaLive focuses on making environmental monitoring data easier to understand by combining multiple views of the same monitoring system.
 
-# Using Node.js
-npx http-server
+The current application includes:
 
-# Using PHP
-php -S localhost:8000
+* Monitoring station visualization
+* Environmental data presentation
+* Data visualization through dedicated charts
+* Sensor-oriented views
+* A 3D representation of the monitored area
+* Station markers positioned within the 3D environment
+* Dedicated views for fauna and species information
+* A simulation-oriented project structure
+* A modular project organization separating frontend, backend, database, models, and simulator components
 
-Then navigate to http://localhost:8000
+The repository currently represents an evolving MVP/prototype rather than a production-connected environmental monitoring infrastructure.
 
-## Project Structure
+---
 
-bega/
-├── index.html       # Main HTML structure
-├── styles.css       # Modern responsive styling
-├── app.js          # Main application logic & map initialization
-├── data.js         # Station data & utility functions
-└── README.md       # This file
+## System Structure
 
-## Technologies Used
+The project is organized into several main components:
 
-* Leaflet.js - Interactive mapping library
-* Chart.js - Data visualization library
-* OpenStreetMap - Map tiles
-* CSS Grid - Responsive layout
-* Vanilla JavaScript - No frameworks required
+```text
+BegaLive/
+└── BegaLive-master/
+    ├── backend/
+    ├── database/
+    ├── frontend/
+    ├── harta_extracted/
+    ├── models/
+    │   └── harta.glb
+    ├── simulator/
+    ├── app.js
+    ├── data.js
+    ├── index.html
+    ├── dashboard.html
+    ├── grafice.html
+    ├── fauna.html
+    ├── specii.html
+    ├── senzor.html
+    ├── styles.css
+    ├── start-demo.bat
+    └── README.md
+```
+
+### Core project areas
+
+| Component        | Purpose                                                 |
+| ---------------- | ------------------------------------------------------- |
+| `frontend/`      | Frontend-related project area                           |
+| `backend/`       | Backend-related project area                            |
+| `database/`      | Database-related project area                           |
+| `simulator/`     | Simulation-related project area                         |
+| `models/`        | 3D assets used by the application                       |
+| `app.js`         | Initializes and controls the 3D visualization           |
+| `data.js`        | Defines the monitoring station data used by the 3D view |
+| `dashboard.html` | Dashboard interface                                     |
+| `grafice.html`   | Data visualization interface                            |
+| `senzor.html`    | Sensor-oriented interface                               |
+| `fauna.html`     | Fauna information interface                             |
+| `specii.html`    | Species information interface                           |
+| `index.html`     | Main entry page                                         |
+| `styles.css`     | Shared styling                                          |
+
+---
 
 ## Monitoring Stations
 
-The system monitors 5 key stations along the Bega River:
-* Bega Source (Coka) - 120m elevation, Cold water
-* Backa Palanka - 85m elevation, Cool water
-* Becej Station - 80m elevation, Moderate temperature
-* Zrenjanin Area - 75m elevation, Warm water
-* Bega - Tisa Mouth - 70m elevation, Warmest point
+The current station configuration contains four monitoring points:
 
-## Key Metrics Tracked
+| ID       | Station          | Base Temperature |
+| -------- | ---------------- | ---------------: |
+| `bega-1` | Nod Uzina de Apă |             14°C |
+| `bega-2` | Nod Centru       |             16°C |
+| `bega-3` | Nod Iosefin      |             17°C |
+| `bega-4` | Nod Freidorf     |             18°C |
 
-* Temperature (°C) - Water temperature with 24h trend
-* pH Level - Water acidity/alkalinity (6.8-7.6 typical range)
-* Oxygen Content - Dissolved oxygen in mg/L
-* Turbidity - Water clarity in NTU
-* Flow Rate - Water discharge in m3/s
+Each station also contains a 3D position used to place its marker in the visualization.
 
-## How to Use
+The station configuration is currently defined in `data.js`.
 
-* View Map: Interactive map shows all monitoring stations
-* Hover/Click Markers: See detailed station information
-* Check Stats Panel: Real-time metrics and 24h temperature trend
-* Refresh Data: Click Refresh Data to get latest readings
-* Toggle Simulation: Click Toggle Simulation for continuous updates
-* Download Report: Click Download Report to export data
+---
 
-## Potential Improvements 🚀
+## 3D Visualization
 
-### 1. Backend Integration
-* Add Express.js/Node.js backend for real database
-* Use PostgreSQL/MongoDB to store historical data
-* Create REST API for data retrieval
-* Enable persistent data storage and analytics
+One of the main visual components of BegaLive is its interactive 3D environment.
 
-### 2. Real Data Sources
-* Integrate with actual water quality IoT sensors
-* Connect to USGS/EPA water data APIs
-* Implement real-time data streaming (WebSocket)
-* Add satellite image overlay for visual context
+The application:
 
-### 3. Advanced Analytics
-* Machine learning for anomaly detection
-* Predictive modeling for flood/drought warnings
-* Time-series analysis and forecasting
-* Statistical trend analysis
+1. Creates a Three.js scene.
+2. Creates a perspective camera.
+3. Initializes a WebGL renderer.
+4. Enables orbit-based camera controls.
+5. Loads the `models/harta.glb` 3D model.
+6. Places monitoring markers according to the station coordinates defined in `data.js`.
+7. Continuously renders the scene.
+8. Updates the renderer and camera when the browser window is resized.
 
-### 4. User Features
-* User authentication & authorization
-* Custom alerts/notifications for threshold exceedances
-* Save favorite stations & custom views
-* Historical data comparison & export
-* Multi-language support
+The 3D model is loaded from:
 
-### 5. Visualization Enhancements
-* 3D river visualization
-* Heatmap overlays for temperature distribution
-* Animation of water flow simulation
-* Multiple chart types (box plots, histograms, etc.)
-* Real-time particle effects for flow visualization
+```text
+models/harta.glb
+```
 
-### 6. Data Quality
-* Input validation & error handling
-* Data quality metrics (completeness, accuracy)
-* Outlier detection & handling
-* Missing data imputation
+If the model cannot be loaded, the application creates a fallback ground plane and still displays the monitoring markers.
 
-### 7. Performance
-* Data caching strategies
-* Compression for large datasets
-* Pagination for station lists
-* Lazy loading for historical data
+---
 
-### 8. Environmental Context
-* Weather overlay (rain, wind, etc.)
-* Seasonal trend analysis
-* Ecosystem impact assessment
-* Species monitoring integration
+## Monitoring Data
 
-### 9. Mobile App
-* React Native/Flutter mobile companion
-* Offline data access
-* Push notifications
-* QR codes for station quick access
+The current station model contains a base temperature value for each monitoring point.
 
-### 10. Reporting & Compliance
-* Automated compliance reports
-* Water quality standards comparison
-* Permit requirement tracking
-* Audit trail & logging
+These values are used by the application's monitoring/simulation logic and provide the initial temperature context for the stations.
+
+The current repository should therefore be understood as a **simulation/prototype environment**, not as a system currently connected to physical environmental sensors.
+
+---
+
+## Application Views
+
+BegaLive is divided into several dedicated interfaces.
+
+### Dashboard
+
+The dashboard provides the central monitoring interface and brings together information from the monitoring system into a single view.
+
+### Graphs
+
+The `grafice.html` interface is dedicated to data visualization.
+
+### Sensor
+
+The `senzor.html` interface provides a dedicated view for sensor-related information.
+
+### Fauna
+
+The `fauna.html` interface focuses on fauna-related environmental information.
+
+### Species
+
+The `specii.html` interface provides a dedicated species-oriented view.
+
+### 3D Map
+
+The 3D environment provides a spatial representation of the monitored area and visualizes the configured monitoring stations directly on the model.
+
+---
+
+## Technology Stack
+
+The current implementation uses web technologies and browser-based visualization libraries.
+
+### Frontend
+
+* HTML5
+* CSS3
+* JavaScript
+* Three.js
+
+### 3D Visualization
+
+* Three.js
+* WebGL
+* `GLTFLoader`
+* `OrbitControls`
+* GLB 3D model format
+
+### Data Visualization
+
+The project contains dedicated visualization pages for presenting monitoring data.
+
+### Data Model
+
+Monitoring stations are currently defined directly in JavaScript through the `MONITORING_STATIONS` configuration.
+
+---
+
+## Architecture
+
+At its current stage, BegaLive can be viewed as a modular monitoring platform with the following conceptual structure:
+
+```text
+                    ┌──────────────────────┐
+                    │      BegaLive       │
+                    │ Monitoring Platform  │
+                    └──────────┬───────────┘
+                               │
+          ┌────────────────────┼────────────────────┐
+          │                    │                    │
+          ▼                    ▼                    ▼
+   ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+   │  Frontend   │      │  Simulator  │      │  3D Model   │
+   │   Views     │      │   / Data    │      │   harta.glb │
+   └──────┬──────┘      └──────┬──────┘      └──────┬──────┘
+          │                    │                    │
+          │                    ▼                    │
+          │             ┌─────────────┐             │
+          │             │ Monitoring  │             │
+          │             │   Stations  │◄────────────┘
+          │             └──────┬──────┘
+          │                    │
+          └──────────┬─────────┘
+                     ▼
+             ┌───────────────┐
+             │ Visualization │
+             │ & Monitoring  │
+             └───────────────┘
+```
+
+The repository also contains separate `backend` and `database` areas, providing a structure for continued development of the system.
+
+---
+
+## 3D Station Model
+
+Each monitoring station is represented in the 3D scene by a spherical marker.
+
+The marker configuration is generated from the station definitions in `data.js`:
+
+```javascript
+{
+    id: 'bega-1',
+    name: 'Nod Uzina de Apă',
+    pos3D: { x: -5, y: 0.5, z: 2 },
+    baseTemp: 14
+}
+```
+
+The same structure is used for the other configured stations.
+
+Each 3D marker stores the corresponding station ID and station name as metadata, allowing the visualization to associate the graphical element with its monitoring station.
+
+---
+
+## Running the Project
+
+The repository contains a `start-demo.bat` file for starting the demo environment on Windows.
+
+The project also contains several standalone HTML interfaces, allowing the application to be explored through the browser.
+
+For the 3D visualization, the application expects the model to be available at:
+
+```text
+models/harta.glb
+```
+
+The project should be run in an environment where the referenced local assets can be loaded correctly by the browser.
+
+---
+
+## Current State
+
+BegaLive is currently an **MVP/prototype**.
+
+The repository already contains the main structural components for a larger monitoring platform, including:
+
+* Multiple application views
+* Monitoring station definitions
+* A 3D environmental visualization
+* A 3D model asset
+* Sensor-oriented functionality
+* Data visualization pages
+* Fauna and species information pages
+* Dedicated backend, database, frontend, and simulator directories
+
+At the same time, the monitoring station data currently defined in `data.js` is application-side data rather than a demonstrated connection to physical environmental sensors.
+
+---
 
 ## Current Limitations
 
-* ⚠️ Data is simulated (not from real sensors)
-* ⚠️ No persistent storage (refreshing page resets data)
-* ⚠️ Limited historical data (24-hour only)
-* ⚠️ No user authentication
-* ⚠️ Single-view dashboard (no customization)
+The current implementation should not be interpreted as a production environmental monitoring network.
 
-## Implementation Roadmap
+In particular:
 
-* Phase 1 (MVP): Current system ✅ 
-* Phase 2: Backend API + Real data source 
-* Phase 3: User accounts & custom dashboards 
-* Phase 4: Mobile app & advanced analytics 
-* Phase 5: AI/ML integration & predictive features
+* Monitoring station data is currently defined in the application.
+* The configured stations are not demonstrated as live physical IoT sensor connections.
+* The project is still under development.
+* The backend and database directories are part of the project structure, but the current README should not imply a fully operational production backend/database pipeline without corresponding implementation.
+* The 3D environment depends on the included `harta.glb` model.
 
-## API Structure (for future backend)
+---
 
-GET /api/stations              # List all stations
-GET /api/stations/:id          # Get station details
-GET /api/data/:stationId       # Get latest readings
-GET /api/data/:stationId/history?hours=24  # Get historical data
-POST /api/data                 # Submit sensor readings
-GET /api/reports/export        # Export data report
+## Development Direction
 
-## Configuration
+The repository structure leaves room for extending BegaLive into a more complete monitoring platform.
 
-To customize the system:
-* Add More Stations - Edit MONITORING_STATIONS in data.js
-* Change Map Center - Modify coordinates in initMap() in app.js
-* Adjust Refresh Rate - Change 30000 (ms) in auto-refresh interval
-* Customize Colors - Edit getTempColor() function in data.js
+Possible future development areas include:
+
+* Connecting monitoring stations to real sensor hardware
+* Introducing persistent environmental data storage
+* Expanding historical data analysis
+* Connecting the frontend to a production backend
+* Extending the monitoring and simulation layers
+* Improving environmental data visualization
+* Expanding the 3D monitoring environment
+* Adding more detailed station information
+* Developing richer fauna and species monitoring capabilities
+
+These represent development directions rather than features currently claimed as implemented.
+
+---
+
+## Project Status
+
+**Version:** 1.0.0
+**Status:** MVP / Prototype
+**Monitoring data:** Application-side / simulated
+**3D visualization:** Implemented
+**Monitoring stations:** 4 configured stations
+**Physical sensor integration:** Not currently demonstrated
+
+---
 
 ## License
 
-Open Source - Feel free to use and modify
-
-## Contributing
-
-Ideas for improvements:
-* Real IoT sensor integration
-* Historical data database
-* Advanced charting
-* Mobile responsiveness
-* API backend
-
-## Support
-
-For questions or suggestions, feel free to contribute!
+Open Source — feel free to use and modify the project.
 
 ---
-* Current Version: 1.0.0 (Demo) 
-* Last Updated: 2026-05-15 
-* Status: MVP Ready for Enhancement
+
+## Repository
+
+Source code:
+
+[BegaLive on GitHub](https://github.com/biabordos/BegaLive?utm_source=chatgpt.com)
