@@ -4,6 +4,8 @@
 
 BegaLive is a web-based environmental monitoring interface designed to provide a visual overview of the Bega River through monitoring stations, environmental measurements, data visualizations, and an interactive 3D representation.
 
+View website: https://biabordos.github.io/BegaLive/
+
 The current version combines a browser-based interface with a simulated monitoring environment and a 3D river/map visualization. The project is structured to support further development toward a more complete monitoring platform.
 
 ---
